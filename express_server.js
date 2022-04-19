@@ -61,4 +61,7 @@ app.listen(PORT, () => {
 
 function generateRandomString() { 
   
+    const result = Math.random().toString(36).toUpperCase().substring(2, 8);
+    console.log(result);
 };
+generateRandomString();
