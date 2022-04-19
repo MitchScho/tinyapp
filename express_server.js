@@ -29,6 +29,13 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+//POST route that removes a URL by accessing shortURL key
+app.post("/urls/:shortURL/delete", (req, res) => {
+  const shortURL = req.params.shortURL;//access shortURL with req.params.shortURL
+  delete urlDatabase[shortURL];//delete from data base by using delete and acessing shortURL key with bracket notation
+  res.redirect("/urls");
+});
+
 //Post to urls page where list of urls with their shortURL keys is looped over and displayed
 app.post("/urls", (req, res) => {
 
