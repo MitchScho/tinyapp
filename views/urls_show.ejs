@@ -11,7 +11,7 @@
 <body>
 
   <%- include('partials/_header') %>
-  
+
   <div class="card text-center">
     <div class="card-header"></div>
     <div class="card-body">
@@ -23,6 +23,16 @@
     </div>
     <div class="card-footer text-muted"></div>
   </div>
+  <main style="margin: 1em;">
+    <h3 class="card text-center">Edit</h3>
+    <form class="card text-center" action= "/urls/<%= shortURL %>" method="POST">
+      <div class="form-group mb-2">
+        <label for="longURL">Enter a URL:</label>
+        <input class="form-control-inline mb-2" type="text" name="longURL" placeholder="http://" style="width: 300px; margin: auto;">
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+    </form>
+  </main>
   <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
     integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
