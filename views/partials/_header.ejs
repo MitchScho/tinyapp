@@ -26,29 +26,33 @@
     </div>
     <div>
       <td> 
-        <% if(username){ %>
-          <td>
-            <form method="POST" action="/urls/<%= username %>/logout">
-              <button type="submit" class="btn btn-primary">Logout</button>
-            </form>
-          </td>
-          <td>
-            <%= username %>
-          </td>
-          <% } else{ %>
-            <form class="card text-center" action="/login" method="POST">
-              <div class="form-group mb-2">
-                <input class="form-control-inline mb-2" type="text" name="username" placeholder="Username"
-                  style="width: 300px; margin: auto;">
-                <button type="submit" class="btn btn-primary">Login</button>
-              </div>
-            </form>
-            <% } %>
+        <div>
+          <% if(username){ %>
+          </div>
+            <div>
+              <%= username %>
+            </div>
+          <form method="POST" action="/logout">
+            <button type="submit" class="btn btn-primary">Logout</button>
+          </form>
+        <% } else{ %>
+          <form class="card text-center" action="/login" method="POST">
+            <div class="form-group mb-2">
+              <input class="form-control-inline mb-2" type="text" name="username" placeholder="Username"
+                style="width: 300px; margin: auto;">
+              <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+          </form>
+          <% } %>
       </td>
     </div>
+  </nav>
+</header>
+  
+              
+          
+          
+        
           
 
-      
-    </nav>
-  </header>
-    
+
