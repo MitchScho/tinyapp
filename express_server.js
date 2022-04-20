@@ -35,6 +35,15 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[shortURL];//delete from data base by using delete and acessing shortURL key with bracket notation
   res.redirect("/urls");
 });
+// POST request from client end
+app.post("/urls/:id", (req, res) => {
+  //rq.params.id is the data that comes from the input form. it's accessed and assigned to the newShortURL variable
+  const newShortUrl = req.params.id
+  //Then the newShortURL is used to update the req.body.longURL which is the edited URL from the client. all is updated on the database 
+  urlDatabase[newShortUrl] = req.body.longURL;
+  res.redirect(`/urls/${newShortUrl}`);
+  
+});
 
 //Post to urls page where list of urls with their shortURL keys is looped over and displayed
 app.post("/urls", (req, res) => {
