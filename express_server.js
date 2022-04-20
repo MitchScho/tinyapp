@@ -36,8 +36,15 @@ app.get("/urls/new", (req, res) => {
 app.post("/login", (req, res) => {
   const username = req.body.username
   res.cookie("username", username);
-  res.redirect("urls/")
-})
+  res.redirect("/urls")
+});
+
+//POST request for Logout
+app.post("/logout", (req, res) => {
+  const username = req.body.username;
+  res.clearCookie("username", username);
+  res.redirect("/urls")
+});
 
 //POST route that removes a URL by accessing shortURL key
 app.post("/urls/:shortURL/delete", (req, res) => {
