@@ -23,12 +23,13 @@ app.get("/", (req, res) => {
 
 //Get page /urls where list of urls is looped over and displayed
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = { urls: urlDatabase, username: req.cookies["username"] };
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const templateVars = { username: req.cookies["username"] };
+  res.render("urls_new", templateVars);
 });
 
 // POST req for user login
@@ -50,6 +51,7 @@ app.post("/urls/:id", (req, res) => {
   const newShortUrl = req.params.id
   //Then the newShortURL is used to update the req.body.longURL which is the edited URL from the client. all is updated on the database 
   urlDatabase[newShortUrl] = req.body.longURL;
+  
   res.redirect(`/urls/${newShortUrl}`);
   
 });
@@ -65,7 +67,7 @@ app.post("/urls", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
 
-  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
+  const templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL], username: req.cookies["username"] };
  
   res.render("urls_show", templateVars);
   
