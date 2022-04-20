@@ -1,15 +1,17 @@
 const express = require("express");
-const app = express();
 const PORT = 8080; 
 const bodyParser = require("body-parser");
+const cookieParser = require('cookie-parser');
 
+const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 let urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com",
 };
 
-app.use(bodyParser.urlencoded({ extended: true }));
 
 // set the view engine to ejs
 app.set('view engine', 'ejs');
@@ -29,13 +31,20 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+// POST req for user login
+app.post("/login", (req, res) => {
+  const username = req.body.username
+  res.cookie("username", username);
+  res.redirect("urls/")
+})
+
 //POST route that removes a URL by accessing shortURL key
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;//access shortURL with req.params.shortURL
   delete urlDatabase[shortURL];//delete from data base by using delete and acessing shortURL key with bracket notation
   res.redirect("/urls");
 });
-// POST request from client end
+// POST request from client end to edit URLs
 app.post("/urls/:id", (req, res) => {
   //rq.params.id is the data that comes from the input form. it's accessed and assigned to the newShortURL variable
   const newShortUrl = req.params.id
