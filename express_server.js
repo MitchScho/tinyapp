@@ -79,7 +79,7 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
   const user = req.cookies.userId ;
   res.clearCookie("userId", user.id);
-  res.redirect("/urls");
+  res.redirect("/login");
 });
 
 //POST route that removes a URL by accessing shortURL key
