@@ -24,9 +24,9 @@
         </a>
       </div>
     </div>
-    <% if(users[loggedUserCookie]){ %>
+    <% if(users[loggedInUser]){ %>
     <div class="nav-item nav-link">
-    <p>Logged in as: <%= users[loggedUserCookie].email %></p> 
+    <p>Logged in as: <%= users[loggedInUser].email %></p> 
     </div>
       <form method="POST" action="/logout">
         <button type="submit" class="btn btn-primary">Logout</button>
