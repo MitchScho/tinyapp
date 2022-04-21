@@ -9,16 +9,17 @@
 </head>
 
 <body>
-
-  <form method="POST" action="/login">
-    <label>email:</label>
-    <input type="email" id="email" name="email">
-    <br />
-    <label>password:</label>
-    <input type="password" id="password" name="password">
-    <button type="submit">Submit</button>
-    <br />
-  </form>
+  <%- include('partials/_header') %>
+    <h5>Login</h5>
+    <form method="POST" action="/login">
+      <label>email:</label>
+      <input type="email" id="email" name="email">
+      <br />
+      <label>password:</label>
+      <input type="password" id="password" name="password">
+      <button type="submit">Submit</button>
+      <br />
+    </form>
 </body>
 
 </html>

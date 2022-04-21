@@ -97,10 +97,18 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${newShortUrl}`); // Redirects to /urls/with the new short url value displayed
 });
 
-//Get request for route file
+//Get request for register file
 app.get("/register", (req, res) => {
+  const loggedUserCookie = req.cookies.userId;
+  const templateVars = { users, loggedUserCookie };
+  res.render("register", templateVars);
+});
 
-  res.render("register");
+//Get request for login file
+app.get("/login", (req, res) => {
+  const loggedUserCookie = req.cookies.userId;
+  const templateVars = { users, loggedUserCookie };
+  res.render("login", templateVars);
 });
 
 //Get page /urls where list of urls is looped over and displayed
@@ -108,7 +116,7 @@ app.get("/urls", (req, res) => {
   const loggedUserCookie = req.cookies.userId;
   const templateVars = { urls: urlDatabase, users, loggedUserCookie };
   res.render("urls_index", templateVars);
-  console.log("cookies", req.cookies);
+  
 });
 
 app.get("/urls/new", (req, res) => {

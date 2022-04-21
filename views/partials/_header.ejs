@@ -36,13 +36,8 @@
             <button type="submit" class="btn btn-primary">Logout</button>
           </form>
         <% } else{ %>
-          <form class="card text-center" action="/login" method="POST">
-            <div class="form-group mb-2">
-              <input class="form-control-inline mb-2" type="text" name="username" placeholder="Username"
-                style="width: 300px; margin: auto;">
-              <button type="submit" class="btn btn-primary">Login</button>
-            </div>
-          </form>
+          <a href="/register">Register</a>
+          <a href="/login">Login</a>
           <% } %>
       </td>
     </div>
