@@ -33,20 +33,20 @@ app.post("/register", (req, res) => {
   if (!email || !password) {
     return res.status(400).send("Please enter valid inputs!");
   }
-  const emailLookUp = function () {
+  const findUser = function () {
     
     for (const userId in users) {
       const user = users[userId];
       if (user.email === email) {
-        return true //email is already in database
+        return users[userId]; // return user object
       }
-    } 
-    return false;// email is new and can be input/used
+    }
+    return null; //user is already in database
   }
   
   //If someone tries to register with an email that is already in the users object,
-  if (emailLookUp()) {
-    return res.status(400).send("SORRY: This email has already been used")
+  if (findUser()) {
+    return res.status(403).send("SORRY: This email has already been used")
   }
 
   res.cookie("userId", user.id);
