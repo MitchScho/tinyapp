@@ -46,7 +46,6 @@ app.post("/register", (req, res) => {
 });
   
   
-
 const findUserByEmail = function (email) {
   console.log("users", users);
   for (const userId in users) {
@@ -63,19 +62,18 @@ const findUserByEmail = function (email) {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  const loggedUserCookie = req.cookies.userId;
   const user = findUserByEmail(email);
-    if (!user) {
-      return res.status(403).send(`SORRY: Could not find a user with the email ${email}`);
-    }
-  if (user.password !== password) {
-      return res.status(403).send("SORRY: This password information is invalid");
-    }
 
+  if (!user) {
+    return res.status(403).send(`SORRY: Could not find a user with the email ${email}`);
+  }
+  if (user.password !== password) {
+    return res.status(403).send("SORRY: This password information is invalid");
+  }
   
-  res.cookie("userId", user.id);
-  res.redirect("/urls");
-});
+    res.cookie("userId", user.id);
+    res.redirect("/urls");
+  });
 
 //POST request for Logout
 app.post("/logout", (req, res) => {
@@ -110,6 +108,23 @@ app.post("/urls", (req, res) => {
   
   res.redirect(`/urls/${newShortUrl}`); // Redirects to /urls/with the new short url value displayed
 });
+
+const characters =
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+const generateRandomString = function (length) {
+  let result = " ";
+  const charactersLength = characters.length;
+
+  //For loop is used to loop through the number passed into the generateRandomString() function
+  //During each iteration, a random character is generated.
+  for (let i = 0; i < length; i++) {
+    //Math.random() method is used to generate random characters from the specified characters var
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+
+  return result;
+};
 
 //Get request for register file
 app.get("/register", (req, res) => {
@@ -156,47 +171,8 @@ app.get("/u/:shortURL", (req, res) => {
 });
   
 
-
-
-
-
-
-// app.get("/urls.json", (req, res) => {
-//   res.json(urlDatabase);
-// })
-
-// app.get("/hello", (req, res) => {
-//   res.send("<html><body>Hello <b>World</b></body></html>\n");
-// });
-
-// app.get("/set", (req, res) => {
-//   const a = 1;
-//   res.send(`a = ${a}`);
-// });
-
-// app.get("/fetch", (req, res) => {
-//   res.send(`a = ${a}`);
-// });
-
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
 
-const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-
-const generateRandomString = function(length) {
-
-  let result = " ";
-  const charactersLength = characters.length;
-
-  //For loop is used to loop through the number passed into the generateRandomString() function
-  //During each iteration, a random character is generated.
-  for (let i = 0; i < length; i++) {
-
-    //Math.random() method is used to generate random characters from the specified characters var
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-
-  return result;
-};

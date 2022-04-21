@@ -4,20 +4,23 @@
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
     integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
-  <title>Register</title>
+  <title>Create Account</title>
 </head>
 <body>
   <%- include('partials/_header') %>
-  <h5>Sign In</h5>
-  <form method="POST" action="/register">
-    <label>email:</label>
-    <input type="email" id="email" name="email">
-    <br/>
-    <label>password:</label>
-    <input type="password" id="password" name="password">
-    <button type="submit">Submit</button>
-    <br/>
-  </form>
+  <main style="margin: 1em;">
+    <h3>Create Account</h3>
+    <form method="POST" action="/register">
+      <h6 class="card-title">email:</h6>
+      <input class="form-control-inline mb-2" type="text" name="email" placeholder="@" style="width: 300px; margin: auto;">
+      <br/>
+      <h6 class="card-title">password:</h6>
+      <input class="form-control-inline mb-2" type="text" name="password" placeholder="password" style="width: 300px; margin: auto;">
+    
+      <br/>
+      <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+  </main>
   <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
     integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
