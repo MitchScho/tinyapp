@@ -24,9 +24,9 @@
         </a>
       </div>
     </div>
-    <% if(users[loggedInUser]){ %>
+    <% if(user){ %>
     <div class="nav-item nav-link">
-    <p>Logged in as: <%= users[loggedInUser].email %></p> 
+    <p>Logged in as: <%= user.email %></p> 
     </div>
       <form method="POST" action="/logout">
         <button type="submit" class="btn btn-primary">Logout</button>
