@@ -19,9 +19,21 @@ const users = {};
 
 //POST request for user to register input information
 app.post("/register", (req, res) => {
-  const id = generateRandomString(4);
   const email = req.body.email;
   const password = req.body.password;
+  
+  //If the e-mail or password are empty strings, send back a response with the 400 status code.
+  if (!email || !password) {
+    return res.status(400).send("Please enter valid inputs!");
+  }
+  
+  //If someone tries to register with an email that is already in the users object,
+  if (findUserByEmail(email)) {
+    return res.status(403).send("SORRY: This email has already been used")
+  }
+  
+  const id = generateRandomString(4);
+  
   const user = {
     id: id,
     email: email,
@@ -29,36 +41,38 @@ app.post("/register", (req, res) => {
   };
   users[id] = user;
 
-  //If the e-mail or password are empty strings, send back a response with the 400 status code.
-  if (!email || !password) {
-    return res.status(400).send("Please enter valid inputs!");
-  }
-  const findUser = function () {
-    
-    for (const userId in users) {
-      const user = users[userId];
-      if (user.email === email) {
-        return users[userId]; // return user object
-      }
-    }
-    return null; //user is already in database
-  }
-  
-  //If someone tries to register with an email that is already in the users object,
-  if (findUser()) {
-    return res.status(403).send("SORRY: This email has already been used")
-  }
-
   res.cookie("userId", user.id);
-  res.redirect("/urls");
+  res.redirect("/login");
 });
+  
+  
+
+const findUserByEmail = function (email) {
+  console.log("users", users);
+  for (const userId in users) {
+    const user = users[userId];
+    if (user.email === email) {
+      return users[userId]; // user found return user object
+    }
+  }
+  return null; //user not found
+};
+
 
 // POST req for user login
 app.post("/login", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
   const loggedUserCookie = req.cookies.userId;
-  const user = loggedUserCookie;
-  console.log("loggedUserCookie, loggedUserCookie");
-  console.log("user", user)
+  const user = findUserByEmail(email);
+    if (!user) {
+      return res.status(403).send(`SORRY: Could not find a user with the email ${email}`);
+    }
+  if (user.password !== password) {
+      return res.status(403).send("SORRY: This password information is invalid");
+    }
+
+  
   res.cookie("userId", user.id);
   res.redirect("/urls");
 });
