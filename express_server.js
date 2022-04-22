@@ -52,7 +52,7 @@ app.post("/register", (req, res) => {
   }
   
   //If someone tries to register with an email that is already in the users object,
-  if (findUserByEmail(email, users)) {
+  if (getUserByEmail(email, users)) {
     return res.status(403).send("SORRY: This email has already been used");
   }
   
@@ -69,7 +69,7 @@ app.post("/register", (req, res) => {
 });
   
   
-const findUserByEmail = function(email, database) {
+const getUserByEmail = function(email, database) {
   
   for (const userId in database) {
     const user = database[userId];
@@ -85,7 +85,7 @@ const findUserByEmail = function(email, database) {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  const user = findUserByEmail(email, users);
+  const user = getUserByEmail(email, users);
   
   if (!user) {
     return res.status(403).send(`SORRY: Could not find a user with the email ${email}`);
