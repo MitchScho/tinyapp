@@ -1,11 +1,18 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser');
+//const cookieParser = require('cookie-parser');
+const bcrypt = require('bcryptjs');
 const PORT = 8080;
-
 const app = express();
+const cookieSession = require("cookie-session");
+
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cookieParser());
+//app.use(cookieParser());
+app.use(cookieSession({
+  name: "session",
+  keys: ["super secret key"],
+}));
+
 
 // set the view engine to ejs
 app.set('view engine', 'ejs');
@@ -38,14 +45,14 @@ const users = {
 app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  
+  const hashedPassword = bcrypt.hashSync(password);
   //If the e-mail or password are empty strings, send back a response with the 400 status code.
   if (!email || !password) {
     return res.status(400).send("Please enter valid inputs!");
   }
   
   //If someone tries to register with an email that is already in the users object,
-  if (findUserByEmail(email)) {
+  if (findUserByEmail(email, users)) {
     return res.status(403).send("SORRY: This email has already been used");
   }
   
@@ -54,21 +61,20 @@ app.post("/register", (req, res) => {
   const user = {
     id: id,
     email: email,
-    password: password,
+    password: hashedPassword,
   };
   users[id] = user;
-
-  //res.cookie("userId", user.id);
+  
   res.redirect("/login");
 });
   
   
-const findUserByEmail = function(email) {
+const findUserByEmail = function(email, database) {
   
-  for (const userId in users) {
-    const user = users[userId];
+  for (const userId in database) {
+    const user = database[userId];
     if (user.email === email) {
-      return users[userId]; // user found return user object
+      return user; // user found return user object
     }
   }
   return null; //user not found
@@ -79,30 +85,29 @@ const findUserByEmail = function(email) {
 app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
-  const user = findUserByEmail(email);
-
+  const user = findUserByEmail(email, users);
+  
   if (!user) {
     return res.status(403).send(`SORRY: Could not find a user with the email ${email}`);
   }
-  if (user.password !== password) {
-    return res.status(403).send("SORRY: This password information is invalid");
+  if (!bcrypt.compareSync(password, user.password)) {
+    return res.status(401).send("SORRY: This login information is invalid");
   }
-  
-  res.cookie("userId", user.id);
+  req.session.userId = user.id; // set cookie
   res.redirect("/urls");
 });
 
 //POST request for Logout
 app.post("/logout", (req, res) => {
-  //const user = req.cookies.userId ;
-  res.clearCookie("userId");
+  
+  req.session = null;// clear cookie
   res.redirect("/login");
 });
 
 //POST route that removes a URL by accessing shortURL key
 app.post("/urls/:shortURL/delete", (req, res) => {
   const shortURL = req.params.shortURL;//access shortURL with req.params.shortURL
-  const userID = req.cookies.userId;
+  const userID = req.session.userId;
   if (!userID || urlDatabase[shortURL].userID !== userID) {
     return res.status(401).send("SORRY: You must be logged in to delete url!");
   }
@@ -117,7 +122,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.post("/urls/:id", (req, res) => {
   //rq.params.id is the data that comes from the input form. It's accessed and assigned to the newShortURL variable
   const newShortUrl = req.params.id;
-  const userID = req.cookies.userId;
+  const userID = req.session.userId;
   if (!userID || urlDatabase[newShortUrl].userID !== userID) {
     return res.status(401).send("SORRY: You must be logged in to edit a url!");
   }
@@ -133,7 +138,7 @@ app.post("/urls/:id", (req, res) => {
 //Post to urls page where list of urls with their shortURL keys is looped over and displayed
 app.post("/urls", (req, res) => {
   
-  const userID = req.cookies.userId;
+  const userID = req.session.userId;
   
   if (!userID) {
     return res.status(401).send("SORRY: You must be logged in to add new url!");
@@ -164,14 +169,14 @@ const generateRandomString = function(length) {
 
 //Get request for register file
 app.get("/register", (req, res) => {
-  const loggedInUser = req.cookies.userId;
+  const loggedInUser = req.session.userId;
   const templateVars = { user: users[loggedInUser] };
   res.render("register", templateVars);
 });
 
 //Get request for login file
 app.get("/login", (req, res) => {
-  const loggedInUser = req.cookies.userId;
+  const loggedInUser = req.session.userId;
   const templateVars = { user: users[loggedInUser] };
   res.render("login", templateVars);
 });
@@ -191,7 +196,7 @@ const urlsForUserId = function(database, userId) {
 
 //Get page /urls where list of urls is looped over and displayed
 app.get("/urls", (req, res) => {
-  const loggedInUser = req.cookies.userId;
+  const loggedInUser = req.session.userId;
   if (!loggedInUser) {
     res.status(401).send("Please login to access Tinyapp.");
   }
@@ -204,13 +209,11 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
 
-  const loggedInUser = req.cookies.userId;
+  const loggedInUser = req.session.userId;
   if (!loggedInUser) {
     res.redirect("/login");
   }
-  // if (user.password !== password) {
-  //   return res.status(403).send("SORRY: This password information is invalid");
-  // }
+  
   const templateVars = { user: users[loggedInUser] };
   res.render("urls_new", templateVars);
 });
@@ -218,7 +221,7 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[req.params.shortURL].longURL;
-  const loggedInUser = req.cookies.userId;
+  const loggedInUser = req.session.userId;
   if (!loggedInUser || urlDatabase[shortURL].userID !== loggedInUser) {
     return res.status(401).send("SORRY: You do no have permission to access this page!");
   }
@@ -229,7 +232,7 @@ app.get("/urls/:shortURL", (req, res) => {
 
 //Get new route for shortURL requests. Where it redirects to the corresponding longURL
 app.get("/u/:shortURL", (req, res) => {
-  console.log("url database", urlDatabase);
+  
   const longURL =  urlDatabase[req.params.shortURL].longURL;
   if (!longURL) {
     res.status(401).send("Sorry: Incorrect URL");
