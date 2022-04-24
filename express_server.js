@@ -45,22 +45,22 @@ app.post("/register", (req, res) => {
   if (!email || !password) {
     return res.status(400).send("Please enter valid inputs!");
   }
-  
+
   //If someone tries to register with an email that is already in the users object,
   if (getUserByEmail(email, users)) {
     return res.status(403).send("SORRY: This email has already been used");
   }
-  
+
   const id = generateRandomString(4);
-  
+
   const user = {
     id: id,
     email: email,
     password: hashedPassword,
   };
   users[id] = user;
-  
-  res.redirect("/login");
+  req.session.userId = user.id; // set cookie
+  res.redirect("/urls");
 });
   
 // POST req for user login
@@ -73,9 +73,9 @@ app.post("/login", (req, res) => {
     return res.status(403).send(`SORRY: Could not find a user with the email ${email}`);
   }
   if (!bcrypt.compareSync(password, user.password)) {
-    return res.status(401).send("SORRY: This login information is invalid");
+    return res.status(403).send("SORRY: This login information is invalid");
   }
-  req.session.userId = user.id; // set cookie
+  req.session.userId = user.id; // set cookie 
   res.redirect("/urls");
 });
 
@@ -83,7 +83,7 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
   
   req.session = null;// clear cookie
-  res.redirect("/login");
+  res.redirect("/urls");
 });
 
 //POST route that removes a URL by accessing shortURL key
@@ -110,7 +110,7 @@ app.post("/urls/:id", (req, res) => {
   //Database is updated with longURL from the client
   urlDatabase[newShortUrl].longURL = req.body.longURL;
   
-    res.redirect(`/urls/${newShortUrl}`);
+    res.redirect("/urls");
   
 });
   
@@ -133,14 +133,20 @@ app.post("/urls", (req, res) => {
 app.get("/register", (req, res) => {
   const loggedInUser = req.session.userId;
   const templateVars = { user: users[loggedInUser] };
-  res.render("register", templateVars);
+  if (!loggedInUser) {
+    res.render("register", templateVars);
+  }
+  res.redirect("/urls"); 
 });
 
 //Get request for login file
 app.get("/login", (req, res) => {
   const loggedInUser = req.session.userId;
   const templateVars = { user: users[loggedInUser] };
-  res.render("login", templateVars);
+  if (!loggedInUser) {
+    res.render("login", templateVars);
+  }
+  res.redirect("/urls");
 });
 
 //Get page /urls where list of urls is looped over and displayed
@@ -173,9 +179,13 @@ app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[req.params.shortURL].longURL;
   const loggedInUser = req.session.userId;
+  const urlInfo = urlDatabase[req.params.shortURL];
 
   if (!loggedInUser || urlDatabase[shortURL].userID !== loggedInUser) {
     return res.status(401).send("SORRY: You do no have permission to access this page!");
+  }
+  if (!urlInfo) {
+    res.status(401).send("Sorry: Incorrect URL");
   }
   const templateVars = { shortURL, longURL, user: users[loggedInUser] };
   res.render("urls_show", templateVars);
@@ -192,6 +202,14 @@ app.get("/u/:shortURL", (req, res) => {
     
   res.redirect(longURL);
 });
+
+app.get("/", (req, res) => {
+  const user = req.session.userId;
+  if (!user) {
+    res.redirect("/login")
+  }
+  res.redirect("/urls")
+})
   
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
