@@ -133,7 +133,7 @@ app.get("/register", (req, res) => {
   const templateVars = { user: users[loggedInUser] };
 
   if (!loggedInUser) {
-    res.render("register", templateVars);
+    return res.render("register", templateVars);
   }
   res.redirect("/urls");
 });
@@ -144,7 +144,7 @@ app.get("/login", (req, res) => {
   const templateVars = { user: users[loggedInUser] };
 
   if (!loggedInUser) {
-    res.render("login", templateVars);
+    return res.render("login", templateVars);
   }
   res.redirect("/urls");
 });
@@ -154,7 +154,7 @@ app.get("/urls", (req, res) => {
   const loggedInUser = req.session.userId;
 
   if (!loggedInUser) {
-    res.status(401).send("Please login to access Tinyapp.");
+    return res.status(401).send("Please login to access Tinyapp.");
   }
   const urlsForUser = getUrlsForUserId(loggedInUser, urlDatabase);
   const templateVars = { urls: urlsForUser, user: users[loggedInUser] };
@@ -166,7 +166,7 @@ app.get("/urls/new", (req, res) => {
   const loggedInUser = req.session.userId;
   
   if (!loggedInUser) {
-    res.redirect("/login");
+    return res.redirect("/login");
   }
   const templateVars = { user: users[loggedInUser] };
   res.render("urls_new", templateVars);
@@ -179,7 +179,7 @@ app.get("/urls/:shortURL", (req, res) => {
   const urlInfo = urlDatabase[req.params.shortURL];
   
   if (!urlInfo) {
-    res.status(401).send("Sorry: Incorrect URL");
+    return res.status(401).send("Sorry: Incorrect URL");
   }
   if (!loggedInUser) {
     return res.status(401).send("SORRY: You are not logged in!");
@@ -197,7 +197,7 @@ app.get("/u/:shortURL", (req, res) => {
   const urlInfo = urlDatabase[req.params.shortURL];
 
   if (!urlInfo) {
-    res.status(401).send("Sorry: Incorrect URL");
+    return res.status(401).send("Sorry: Incorrect URL");
   }
   const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
@@ -207,14 +207,19 @@ app.get("/", (req, res) => {
   const user = req.session.userId;
   
   if (!user) {
-    res.redirect("/login");
+    return res.redirect("/login");
   }
   res.redirect("/urls");
 });
   
+app.get("*", (req, res) => {
+  res.status(404).send("Sorry: Page not found");
+});
+
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
   
 
 

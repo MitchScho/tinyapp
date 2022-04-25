@@ -25,8 +25,8 @@
       </div>
     </div>
     <% if(user){ %>
-    <div class="nav-item nav-link">
-    <p>Logged in as: <%= user.email %></p> 
+    <div>
+    <abbr style="color:black">Logged in as: <%= user.email %></abbr>
     </div>
       <form method="POST" action="/logout">
         <button type="submit" class="btn btn-success border border-white" >Logout</button>
