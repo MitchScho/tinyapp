@@ -127,7 +127,6 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${newShortUrl}`); //Redirects to /urls/with the new short url value displayed
 });
   
-
 //Get request for register file
 app.get("/register", (req, res) => {
   const loggedInUser = req.session.userId;
